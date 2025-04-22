@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 import './VideoRecorder.css';
 
 const VideoRecorder = ({ onVideoRecorded }) => {
@@ -116,7 +117,8 @@ const VideoRecorder = ({ onVideoRecorded }) => {
     try {
       chunksRef.current = [];
       const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=vp9,opus'
+        mimeType: 'video/webm;codecs=h264',
+        videoBitsPerSecond: 2500000
       });
       
       mediaRecorderRef.current = mediaRecorder;
@@ -211,31 +213,31 @@ const VideoRecorder = ({ onVideoRecorded }) => {
     uploadControllerRef.current = new AbortController();
     
     try {
-      // Create FormData
+      // Create FormData with metadata
       const formData = new FormData();
       formData.append('video', blob, 'recording.webm');
+      formData.append('metadata', JSON.stringify({
+        timestamp: new Date().toISOString(),
+        duration: recordingTime,
+        format: 'webm',
+        codec: 'h264',
+        resolution: {
+          width: videoRef.current.videoWidth,
+          height: videoRef.current.videoHeight
+        }
+      }));
       
-      // Simulate upload progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 500);
-      
-      // Simulate API call with error
-      await new Promise((_, reject) => setTimeout(() => {
-        reject(new Error('Network error: Backend server not available'));
-      }, 3000));
-      
-      // Clear the progress interval
-      clearInterval(progressInterval);
-      
-      // Complete the upload
-      setUploadProgress(100);
+      // Make the actual API call to the backend using axios
+      const response = await axios.post('http://localhost:8000/upload-video', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        signal: uploadControllerRef.current.signal,
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
+        },
+      });
       
       // Show success notification
       if (window.showNotification) {
@@ -244,20 +246,23 @@ const VideoRecorder = ({ onVideoRecorded }) => {
       
       // Call the callback with the video URL and any response data
       if (onVideoRecorded) {
-        onVideoRecorded(videoUrl, { success: true });
+        onVideoRecorded(videoUrl, response.data);
       }
       
-      // Reset after a short delay
-      setTimeout(() => {
-        setIsUploading(false);
-        setUploadProgress(0);
-      }, 1000);
+      // Reset upload state
+      setIsUploading(false);
+      setUploadProgress(0);
     } catch (err) {
       console.error('Error uploading video:', err);
       
-      // Show error notification
+      // Show error notification with more specific error message
       if (window.showNotification) {
-        window.showNotification('Failed to upload video: Backend server not available', 'error', 5000);
+        const errorMessage = err.response?.data?.detail || err.message || 'Backend server not available';
+        window.showNotification(
+          `Failed to upload video: ${errorMessage}`,
+          'error',
+          5000
+        );
       }
       
       setIsUploading(false);
