@@ -1,8 +1,9 @@
 .App {
   text-align: center;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .App-logo {
@@ -18,12 +19,28 @@
 
 .App-header {
   background-color: #282c34;
-  padding: 20px;
+  padding: 10px;
   color: white;
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.App-footer {
+  background-color: #282c34;
+  color: white;
+  padding: 5px;
+  font-size: 0.8rem;
+}
+
+.App-footer p {
+  margin: 0;
 }
 
 @keyframes App-logo-spin {
@@ -116,12 +133,45 @@
 
 main {
   flex: 1;
-  padding: 20px;
+  padding: 10px;
+  overflow: hidden;
 }
 
-footer {
-  background-color: #282c34;
-  color: white;
-  padding: 10px;
-  font-size: 14px;
+/* Split Screen Layout */
+.split-screen {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.chat-panel {
+  flex: 1;
+  min-width: 0; /* Prevents flex items from overflowing */
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.recorder-panel {
+  flex: 1;
+  min-width: 0; /* Prevents flex items from overflowing */
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Responsive layout for smaller screens */
+@media (max-width: 768px) {
+  .split-screen {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .chat-panel, .recorder-panel {
+    height: 50%;
+    width: 100%;
+  }
 }
