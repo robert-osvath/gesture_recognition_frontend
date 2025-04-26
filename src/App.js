@@ -19,18 +19,20 @@ function App() {
     
     // Add the user message to the chat
     setMessages(prevMessages => [...prevMessages, userMessage]);
+
+    console.log(responseData);
     
-    // Simulate a bot response after a short delay
-    setTimeout(() => {
-      const botMessage = {
-        sender: 'bot',
-        type: 'text',
-        content: 'Thank you for your video message! I\'m processing it now.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      
-      setMessages(prevMessages => [...prevMessages, botMessage]);
-    }, 1500);
+    // Get the dvs video from the response and add it to the messages
+    const responseUrl = URL.createObjectURL(responseData)
+    const responseVideoMessage = {
+      sender: 'bot',
+      type: 'video',
+      content: responseUrl,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+
+    // Add the response to the messages
+    setMessages(prevMessages => [...prevMessages, responseVideoMessage])
   };
   
   // Add a welcome message when the app first loads

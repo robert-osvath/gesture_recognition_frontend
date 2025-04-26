@@ -117,7 +117,7 @@ const VideoRecorder = ({ onVideoRecorded }) => {
     try {
       chunksRef.current = [];
       const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm;codecs=h264',
+        mimeType: 'video/mp4',
         videoBitsPerSecond: 2500000
       });
       
@@ -130,9 +130,9 @@ const VideoRecorder = ({ onVideoRecorded }) => {
       };
       
       mediaRecorder.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+        const blob = new Blob(chunksRef.current, { type: 'video/mp4' });
         const videoUrl = URL.createObjectURL(blob);
-        
+
         // Show success notification
         if (window.showNotification) {
           window.showNotification('Recording completed successfully!', 'success', 3000);
@@ -142,7 +142,7 @@ const VideoRecorder = ({ onVideoRecorded }) => {
         await uploadVideo(blob, videoUrl);
       };
       
-      mediaRecorder.start(1000); // Collect data every second
+      mediaRecorder.start(); 
     } catch (err) {
       console.error('Error starting recording:', err);
       setError('Failed to start recording. Please try again.');
@@ -219,8 +219,7 @@ const VideoRecorder = ({ onVideoRecorded }) => {
       formData.append('metadata', JSON.stringify({
         timestamp: new Date().toISOString(),
         duration: recordingTime,
-        format: 'webm',
-        codec: 'h264',
+        format: 'mp4',
         resolution: {
           width: videoRef.current.videoWidth,
           height: videoRef.current.videoHeight
@@ -237,8 +236,9 @@ const VideoRecorder = ({ onVideoRecorded }) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setUploadProgress(percentCompleted);
         },
+        responseType: "blob",
       });
-      
+
       // Show success notification
       if (window.showNotification) {
         window.showNotification('Video uploaded successfully!', 'success', 3000);
