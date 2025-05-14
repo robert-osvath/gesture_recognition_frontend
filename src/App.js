@@ -34,6 +34,17 @@ function App() {
     // Add the response to the messages
     setMessages(prevMessages => [...prevMessages, responseVideoMessage])
   };
+
+  const handleResponseReceived = (response) => {
+    const responseBotMessage = {
+      sender: 'bot',
+      type: 'text',
+      content: response,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }
+
+    setMessages(prevMessages => [...prevMessages, responseBotMessage])
+  }
   
   // Add a welcome message when the app first loads
   useEffect(() => {
@@ -57,7 +68,7 @@ function App() {
           <ChatInterface messages={messages} />
         </div>
         <div className="recorder-panel">
-          <VideoRecorder onVideoRecorded={handleVideoRecorded} />
+          <VideoRecorder onVideoRecorded={handleVideoRecorded} onResponseReceived={handleResponseReceived} />
         </div>
       </main>
       <footer className="App-footer">

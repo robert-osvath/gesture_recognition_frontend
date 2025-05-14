@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './VideoRecorder.css';
 
-const VideoRecorder = ({ onVideoRecorded }) => {
+const VideoRecorder = ({ onVideoRecorded, onResponseReceived }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isStreamInitialized, setIsStreamInitialized] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
@@ -247,6 +247,14 @@ const VideoRecorder = ({ onVideoRecorded }) => {
       // Call the callback with the video URL and any response data
       if (onVideoRecorded) {
         onVideoRecorded(videoUrl, response.data);
+      }
+
+      // Call the prediction
+      const chatbotResponse = await axios.get('http://localhost:8000/get-response');
+
+      // Call the callback with the message response
+      if (onResponseReceived) {
+        onResponseReceived(chatbotResponse.data);
       }
       
       // Reset upload state
