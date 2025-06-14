@@ -51,7 +51,7 @@ function App() {
     const welcomeMessage = {
       sender: 'bot',
       type: 'text',
-      content: 'Hello! I\'m your video chatbot. Record a video message to start our conversation.',
+      content: 'Hello! I\'m your Sign Language Translator. Please record a video of you signing a word in ASL, which I will then translate into text and give you some context about the history and etimology of the word.',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     
@@ -61,7 +61,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Video Chatbot</h1>
+        <h1>Sign Language Translator</h1>
       </header>
       <main className="split-screen">
         <div className="chat-panel">
@@ -72,7 +72,7 @@ function App() {
         </div>
       </main>
       <footer className="App-footer">
-        <p>© 2023 Video Chatbot</p>
+        <p>© 2025 Sign Language Translator</p>
       </footer>
       <NotificationContainer />
     </div>
